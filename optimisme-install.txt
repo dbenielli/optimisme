@@ -1,0 +1,46 @@
+# Compatibility test for OPTMISME plugins in ImageJ and Fiji
+
+# Test with optimisme_.java hidden under the name optimisme.txt
+
+# Installation tested and ok (26/07/2017):
+
+Fiji : 
+	- ok from 1.46 until 1.51 (current) with java 1.8.0_66. 
+	- tested exactly Fiji 1.46r, 1.48v, 1.49v, 1.50i, 1.51n.
+	- 1.51n (current version) downloaded from https://fiji.sc/#download.
+	- other versions reached through Fiji->Help->Update ImageJ...
+	
+ImageJ : 
+	- ok from 1.48 until 1.51  (current) with java 1.8.0_66. 
+	- tested exactly imageJ 1.48v, 1.49v, 1.51j8.
+	- downloaded 1.51j8 (current version) from https://imagej.nih.gov/ij/download.html
+	- downloaded 1.48v, 1.49v from https://imagej.nih.gov/ij/download/linux/
+
+# If your current version of Fiji or imageJ uses java 1.7 or below, you need to upgrade to a more recent version (1.51) that uses java 1.8 or to force you version to use java 8 by : 
+ - downloading java 1.8 
+and
+ - locating the corresponding 'java' binary and its full path 'FULLJAVAPATH'  and run Fiji or ImageJ using the jar file :
+ Example for Fiji (1.51n)
+	* java 1.8 lies in 'FULLJAVAPATH/java'
+	* Fiji is installed in 'FIJIPATH/Fiji.app/' 
+	* Fiji may be launched using the jar file 'FIJIPATH/Fiji.app/jars/ij-1.51n.jar'
+	* Type 
+		> cd FIJIPATH/Fiji.app/
+		> FULLJAVAPATH/java -jar jars/ij-1.51n.jar 
+	* This should launch Fiji 1.51n with java 1.8
+
+ Example for ImageJ
+	* java 1.8 lies in 'FULLJAVAPATH/java'
+	* ImageJ is installed in 'IMAGEJPATH/ImageJ/' 
+	* ImageJ may be launched using the jar file 'IMAGEJPATH/ij.jar'
+	* Type 
+		> cd IMAGEJPATH/ImageJ/
+		> FULLJAVAPATH/java -jar ij.jar 
+	* This should launch ImageJ with java 1.8
+
+# Install and use the plugin OPTIMISME :
+	- copy the OPTISMISME directory into Fiji.app/plugins/ or ImageJ/plugins/
+	- cd to the plugins/OPTIMISME/ directory
+	- rename optimisme_.java into optimisme.txt
+	- launch ImageJ or Fiji with java 1.8 or later (see above).
+

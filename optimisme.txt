@@ -1,0 +1,252 @@
+import optimisme.MM;
+import optimisme.MM.MMParameter;
+import ij.*;
+import ij.gui.*;
+import ij.plugin.*;
+
+/**
+ * Title:        OPTIMIST --- A 3D  implementation for ImageJ
+ * Description: Optimism is a deconvolution method based on the Majorization
+ * minimization algorithm, devoted to bi-photon' microscopic images.
+ * 
+ * include Libraries:
+ * -edu.emory.mathcs.jtransforms in jtranforms-2.4.jar on BSD -2 Clause and BSD 3 Clause Licence
+ * -org.apache.commons.math3 in org on Apache Licence
+ * -org.ejml in org on Apache Licence
+ * 
+ * Copyright:    Copyright (c) 2016
+ * Company:      Labex Archimède, I2M
+ *               AMU Aix Marseille Université
+ * @author       Dominique Benielli
+ * @author       Caroline Chaux-Moulin
+ * @author       Sandrine Anthoine
+ * @version 1.2
+ * 
+ */
+public class optimisme_ implements PlugIn
+{
+	private static final String plugInTitle = "OPTIMISME --- A java Optimisme implementation";
+	private static final String outputFrameTitlePrefix = "Optimisme Reconstruction--- ";
+	private static final String version = "1.2";
+	/* (non-Javadoc)
+	 * @see ij.plugin.PlugIn#run(java.lang.String)
+	 */
+	public void run( String arg )
+	{   String info ="";
+	int NbIt = 1000;
+	double regul = 1e-1;
+	int T = 1;
+	double regulZ = 1e-2;
+	double TZ  = 0.01;
+	int eta = 1;
+	int phixy = 4;
+	int phiz = 5;
+	int numberChannelChoice = 5;
+	int numberChannelMax = 1;
+
+	int numberChannel = 1;
+
+	int[] tabChan = null;
+	String[] strTabChan = null;
+	if ( arg.equalsIgnoreCase( "about" ) )
+	{
+		showAbout();
+		return;
+	}
+
+	// check if appropriate version of ImageJ is installed
+	if ( IJ.versionLessThan( "1.48t" ) )
+		return;
+
+	// check if Java, ver. 1.1.8 or higher is installed
+	if ( System.getProperty( "java.version" ).compareTo( "1.8" ) < 0 )
+	{
+		IJ.error( "The current java version is " +
+	                   System.getProperty( "java.version" )+
+	                   ". This plugin has been developed and tested with Java, version 1.8 and higher.\n" +
+			   "Please upgrade your JVM." );
+		return;
+	    
+	}
+
+	int[] wList = WindowManager.getIDList();
+	if ( wList == null )
+	{
+		IJ.noImage();
+		return;
+	}
+
+	String[] titles1 = new String[ wList.length ];
+	for ( int i = 0; i < wList.length; i++ )
+	{
+		ImagePlus imp = WindowManager.getImage( wList[ i ] );
+
+		if ( imp != null )
+			titles1[ i ] = imp.getTitle();
+		else
+			titles1[ i ] = "";
+	}
+
+	// add option '<none>' to image titles
+	String[] titles2 = new String[ wList.length + 1 ];
+	titles2[ 0 ] = "<none>";
+	for ( int i = 0; i < wList.length; i++ )
+	{
+		ImagePlus imp = WindowManager.getImage( wList[ i ] );
+		numberChannel =  imp.getNChannels();
+
+		if (i==0 || numberChannelChoice <  numberChannel || numberChannel > tabChan[tabChan.length-1]){
+
+			tabChan = new int[numberChannel];
+			numberChannelMax = numberChannel;
+			strTabChan = new String[numberChannel];
+			for(int ii = 0; ii< numberChannel ; ii++){
+				tabChan[ii] = ii+1;
+				strTabChan[ii] = String.valueOf(ii+1);
+			}
+		}
+		if ( imp != null )
+			titles2[ i + 1 ] = imp.getTitle();
+		else
+			titles2[ i + 1 ] = "";
+	}
+
+	//     tabChan = new int[numberChanneli];
+	//     strTabChan = new String[numberChanneli];
+
+
+
+	GenericDialog gd = new GenericDialog( plugInTitle, IJ.getInstance() );
+	gd.addChoice( "Image to process:", titles1,  titles1[ 0 ] );
+	gd.addChoice("Channel number",strTabChan , 
+			(numberChannelChoice > numberChannelMax) ? String.valueOf(numberChannelMax) : String.valueOf(numberChannelChoice));
+
+	gd.addChoice( "PSF to process:", titles2, titles2[ 0 ] );
+	gd.addNumericField("Number of iterations", NbIt, 0);
+	gd.addNumericField("XY regularization", regul, 4);
+	gd.addNumericField("XY smoothing", T, 0);
+	gd.addNumericField("Z regularization", regulZ, 6);
+	gd.addNumericField("Penalization phixy ([1,7])", phixy, 0);
+	gd.addNumericField("Penalization phiz ([1,5])", phiz, 0);
+	gd.addNumericField("Z smoothing", TZ, 4);
+	gd.addNumericField("Penalization eta", eta, 0);
+	gd.showDialog();
+	NbIt = (int)gd.getNextNumber();
+	regul = (double)gd.getNextNumber();
+	T = (int)gd.getNextNumber();
+	regulZ = (double)gd.getNextNumber(); 
+	phixy = (int)gd.getNextNumber(); 
+	phiz = (int)gd.getNextNumber(); 
+	TZ = (double)gd.getNextNumber(); 
+	eta = (int)gd.getNextNumber(); 
+	if(gd.invalidNumber())
+	{IJ.error("Invalid input Number"); return;}
+
+	int indice1 = gd.getNextChoiceIndex()  ;
+	numberChannel = gd.getNextChoiceIndex() +1 ;
+	ImagePlus imp = WindowManager.getImage(wList[indice1 ]);
+	if (numberChannel > imp.getNChannels()) {
+		//IJ.error( "The specified image does'nt have enougth channels." );
+		IJ.showMessage( "The specified image does'nt have enougth channels." );
+		return;
+	}
+
+	int indice2 =  gd.getNextChoiceIndex()  ;
+
+
+	if (indice2 == 0 ) {
+		IJ.showMessage("The psf is not specified");
+		return;
+	}
+	ImagePlus psf = WindowManager.getImage( wList[ indice2 -1] );
+
+
+	if ( imp.lockSilently() == false )
+	{
+		IJ.error( "The specified image already is in use." );
+		return;
+	}
+
+	if ( ( psf != null ) && ( psf.lockSilently() == false ) && ( psf != imp ) )
+	{
+		IJ.error( "The specified psf  already is in use." );
+		imp.unlock();
+		return;
+	}
+
+	if ( gd.wasCanceled() )
+	{
+		imp.unlock();
+		psf.unlock();
+		return;
+	}        
+	try
+	{
+		double[] resPSF = new double[3];
+		double[] resIM = new double[3];
+		resPSF[0] = psf.getCalibration().pixelWidth;
+		resPSF[1] = psf.getCalibration().pixelHeight;
+		resPSF[2] = psf.getCalibration().pixelDepth;
+		resIM[0] = imp.getCalibration().pixelWidth;
+		resIM[1] = imp.getCalibration().pixelHeight;
+		resIM[2] = imp.getCalibration().pixelDepth;
+		double mul  = 1.0;
+		if(imp.getCalibration().getUnits().equalsIgnoreCase(psf.getCalibration().getUnits()) ){
+			mul = 1.0;  		
+		}
+		else {
+			IJ.showMessage( "About optimisme...", "Image and PSF are not calibrated in same units.");
+			//IJ.error( "Image and PSF are not calibrated in same units." );
+			return;
+		}
+
+		MM.MMParameter param = new MMParameter(NbIt, regul, T, regulZ, 
+				phixy , phiz, TZ, eta, resIM,resPSF,imp.getCalibration().getUnits());
+
+		int psfchannel = psf.getNChannels();
+		if ( psfchannel >= numberChannel ) 
+			psfchannel = numberChannel;
+		else 
+			psfchannel = 1;
+
+		//	ImagePlus imtest = new ImagePlus();
+		//	imtest.setStack("test",st);
+		//	imtest.show();
+
+
+		MM minMaxopt = new MM();
+		minMaxopt.process(ChannelSplitter.getChannel(imp,numberChannel),
+				ChannelSplitter.getChannel(psf, psfchannel), param); 
+
+		// create plugIn frame that gives choices for various output
+		//   new OutputFrame( outputFrameTitlePrefix + "Real input: " + real.getTitle() + "; Imaginary input: " +
+		//                   ( ( imaginary != null ) ? imaginary.getTitle() : "<none>"), transformer );
+	}
+	finally
+	{
+		imp.unlock();
+		psf.unlock();
+	}
+	}
+
+	static public void showAbout()
+	{
+		IJ.showMessage( "About  (version"+ version +" ) ...",
+				"This plug-in has been written by\n" +
+						"Labex Archimède Aix Marseille Université \n" +
+						"since March 2017.\n" +
+						"\n" +
+				"" );
+	}
+
+
+	/**
+	 * @param image
+	 * @return boolean if imagePlus
+	 */
+	private static boolean isGrayscale( ImagePlus image )
+	{
+		return ( ( image.getType() == ImagePlus.GRAY8 ) || ( image.getType() == ImagePlus.GRAY16 ) ||
+				( image.getType() == ImagePlus.GRAY32 ) );
+	}
+}
