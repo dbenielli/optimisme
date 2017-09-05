@@ -1,7 +1,7 @@
 language: java
 
 script:
-  - ant test
+  - ant test -lib ./lib/junit-4.12.jar
 
 branches:
   only:
