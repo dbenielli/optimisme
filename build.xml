@@ -5,16 +5,17 @@
   <property name="test.src.dir" value="./optimisme/test"/>
 
   <path id="classpath.test">
-    <pathelement location="lib/junit-4.12.jar"/>
-    <pathelement location="lib/hamcrest-core-1.3.jar"/>
-    <pathelement location="lib/ij.jar"/>
+    <pathelement location="./lib/junit-4.12.jar"/>
+    <pathelement location="./lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="./lib/ij.jar"/>
     <pathelement location="${main.build.dir}"/>
   </path>
 
   <target name="compile">
     <mkdir dir="${main.build.dir}"/>
     <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false"/>
-  </target>
+    <classpath refid="classpath.test"/>
+</target>
 
   <target name="test-compile" depends="compile">
     <mkdir dir="${test.build.dir}"/>
