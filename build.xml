@@ -14,7 +14,6 @@
   <target name="compile">
     <mkdir dir="${main.build.dir}"/>
     <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false"/>
-    <classpath refid="classpath.test"/>
 </target>
 
   <target name="test-compile" depends="compile">
