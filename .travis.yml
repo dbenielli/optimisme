@@ -1,5 +1,8 @@
 language: java
 
+before_install:
+  - cd java
+
 script:
   - ant test
 
