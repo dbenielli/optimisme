@@ -35,11 +35,12 @@
     <junit printsummary="on" haltonfailure="yes" fork="true">
         <classpath>
           <path refid="classpath.test"/>
+          <pathelement location="${main.build.dir}"/>
           <pathelement location="${test.build.dir}"/>
         </classpath>
         <formatter type="brief" usefile="false" />
         <batchtest>
-            <fileset dir="${test.build.dir}" includes="**/*AllTests.java" />
+            <fileset dir="${test.build.dir}" includes="**/*Tests.java" />
         </batchtest>
     </junit>
   </target>
