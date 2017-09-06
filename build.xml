@@ -31,17 +31,18 @@
     </javac>
   </target>
 
-  <target name="test-unit" depends="test-compile">
+  <target name="test" depends="test-compile">
     <junit printsummary="false" haltonfailure="true" fork="off">
         <classpath>
           <path refid="classpath.test"/>
           <pathelement location="${main.build.dir}"/>
           <pathelement location="${test.build.dir}"/>
- <fileset dir="${test.build.dir}/" /> 
+ 
         </classpath>
  <formatter type="brief" usefile="false" />
- <test name="optimisme.test.AllTests" />
-      
+        <batchtest>
+            <fileset dir="${test.src.dir}" includes="**/*Tests.java" />
+        </batchtest>  
     </junit>
   </target>
 </project>
