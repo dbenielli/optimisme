@@ -3,7 +3,7 @@
   <property name="main.src.dir" value="./optimisme"/>
   <property name="test.build.dir" value="./optimisme/test"/>
   <property name="test.src.dir" value="./optimisme/test"/>
-
+  <property name="junit.output.dir" value="junit"/>
   <path id="classpath.base" >
     <pathelement location="jtransforms-2.4.jar"/>
     <pathelement location="org.jar"/>
@@ -38,10 +38,9 @@
           <pathelement location="${main.build.dir}"/>
           <pathelement location="${test.build.dir}"/>
         </classpath>
+         <test name="optimisme.test.AllTests" todir="${junit.output.dir}"/>
+
         <formatter type="brief" usefile="false" />
-        <batchtest>
-            <fileset dir="${test.build.dir}" includes="**/*Tests.java" />
-        </batchtest>
     </junit>
   </target>
 </project>
