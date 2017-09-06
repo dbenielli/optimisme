@@ -32,17 +32,18 @@
   </target>
 
   <target name="test" depends="test-compile">
-    <junit printsummary="false" haltonfailure="true" fork="off">
-        <classpath>
-          <path refid="classpath.test"/>
+    <junit printsummary="on" haltonfailure="yes" fork="true">
+        <classpath>          
           <pathelement location="${main.build.dir}"/>
           <pathelement location="${test.build.dir}"/>
- 
+          <path refid="classpath.test"/>
+          <fileset dir="${test.src.dir}"  />
         </classpath>
  <formatter type="brief" usefile="false" />
         <batchtest>
-            <fileset dir="${test.src.dir}" includes="**/*Tests.java" />
-        </batchtest>  
+            <fileset dir="${test.src.dir}" includes="**/*Tests*" />
+        </batchtest>
+
     </junit>
   </target>
 </project>
