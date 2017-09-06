@@ -4,9 +4,6 @@
   <property name="test.build.dir" value="./optimisme/test/"/>
   <property name="test.src.dir" value="./optimisme/test/"/>
   <property name="junit.output.dir" value="junit/"/>
-    <classpath>
-      <pathelement path="${classpath}"/>
-    </classpath>
   <path id="classpath.base" >
     <fileset dir="." includes="*.jar"/>
     <fileset dir="./lib" includes="*.jar"/>
