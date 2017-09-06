@@ -18,29 +18,26 @@
   </path>
 
   <target name="compile">
-    <mkdir dir="${main.build.dir}"/>
     <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false">
         <classpath refid="classpath.base"/>
     </javac>
 </target>
 
   <target name="test-compile" depends="compile">
-    <mkdir dir="${test.build.dir}"/>
     <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" includeantruntime="false">
         <classpath refid="classpath.test"/>
     </javac>
   </target>
 
   <target name="test" depends="test-compile">
-    <junit printsummary="on" haltonfailure="yes" fork="true" dir="${basedir}">
+    <junit printsummary="yes" haltonfailure="yes" fork="true" dir="${basedir}">
         <classpath>          
-          <pathelement location="${main.build.dir}"/>
           <pathelement location="${test.build.dir}"/>
           <path refid="classpath.test"/>
         </classpath>
  <formatter type="brief" usefile="false" />
         <batchtest>
-            <fileset dir="${test.src.dir}" includes="**/*Tests*" />
+            <fileset dir="${base.dir}" includes="**/*Tests.java" />
         </batchtest>
 
     </junit>
