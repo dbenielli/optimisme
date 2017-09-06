@@ -37,7 +37,6 @@
           <pathelement location="${main.build.dir}"/>
           <pathelement location="${test.build.dir}"/>
           <path refid="classpath.test"/>
-          <fileset dir="${test.src.dir}"  />
         </classpath>
  <formatter type="brief" usefile="false" />
         <batchtest>
