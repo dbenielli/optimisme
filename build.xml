@@ -32,15 +32,15 @@
   </target>
 
   <target name="test" depends="test-compile">
-    <junit printsummary="on" haltonfailure="no" fork="no">
+    <junit printsummary="on" haltonfailure="no" fork="yes">
         <classpath>
           <path refid="classpath.test"/>
           <pathelement location="${main.build.dir}"/>
           <pathelement location="${test.build.dir}"/>
         </classpath>
-         <test name="optimisme.test.AllTests" todir="${junit.output.dir}"/>
-
-        <formatter type="brief" usefile="false" />
+ <formatter type="brief" usefile="false" />
+ <batchtest> <fileset dir="${test.build.dir}/" includes="Tests.class" /> </batchtest>
+      
     </junit>
   </target>
 </project>
