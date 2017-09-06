@@ -30,7 +30,7 @@
   </target>
 
   <target name="test" depends="test-compile">
-    <junit printsummary="yes" haltonfailure="yes" fork="true" dir="${basedir}">
+    <junit printsummary="yes" haltonfailure="yes" fork="true" dir="${test.build.dir}">
         <classpath>          
           <pathelement location="${test.build.dir}"/>
           <path refid="classpath.test"/>
