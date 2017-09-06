@@ -4,29 +4,37 @@
   <property name="test.build.dir" value="./optimisme/test"/>
   <property name="test.src.dir" value="./optimisme/test"/>
   <property name="junit.output.dir" value="junit"/>
-    <classpath>
-      <pathelement path="${classpath}"/>
-    </classpath>
+
+ <classpath path="${classpath}">   
+  <fileset dir="lib">
+        <include name="**/*.jar"/>
+      </fileset>   
+  <fileset dir=".">
+        <include name="**/*.jar"/>
+      </fileset>   
+</classpath>
+
   <path id="classpath.base" >
-    <fileset dir="." includes="*.jar"/>
-    <fileset dir="./lib" includes="*.jar"/>
+    <pathelement path="${classpath}"/>
     <pathelement location="${main.build.dir}"/>
  </path>
 
-  <path id="classpath.test">
+  <path id="classpath.test" cache="true">
+    <pathelement path="${classpath}"/>
     <pathelement location="${test.build.dir}"/>
     <path refid="classpath.base" />
   </path>
 
   <target name="compile">
-    <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false">
-        <classpath refid="classpath.base"/>
+    <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false">   
+    <compilerarg arg="-Xbootclasspath/p:${toString:classpath.base}"/>
     </javac>
 </target>
 
   <target name="test-compile" depends="compile">
     <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" includeantruntime="false">
         <classpath refid="classpath.test"/>
+   <compilerarg arg="-Xbootclasspath/p:${toString:classpath.test}"/>
     </javac>
   </target>
 
