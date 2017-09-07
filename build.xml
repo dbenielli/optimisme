@@ -14,7 +14,8 @@
   <path id="classpath.test">
    <pathelement location="junit-4.12.jar"/>
    <pathelement location="hamcrest-core-1.3.jar"/>
-    <path refid="classpath.base" />
+   <pathelement location="${basedir}" /> 
+   <path refid="classpath.base" />
   </path>
 
   <target name="compile">
@@ -30,7 +31,7 @@
   </target>
 
   <target name="test" depends="test-compile">
-<echo message="JUnit ClassPath is: ${classpath.test}"/>
+<echo message="JUnit ClassPath is: classpath.test"/>
     <junit printsummary="yes" haltonfailure="yes" fork="true" dir="${test.build.dir}">
         <classpath>          
           <pathelement location="${test.build.dir}"/>
@@ -38,7 +39,7 @@
         </classpath>
  <formatter type="brief" usefile="false" />
         <batchtest>
-            <fileset dir="${test.build.dir}" includes="*Tests.java" />
+            <fileset dir="${test.build.dir}" includes="*Tests.class" />
         </batchtest>
 
     </junit>
