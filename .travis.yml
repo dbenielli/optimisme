@@ -9,7 +9,7 @@ before_install:
 - sleep 3 # give xvfb some time to start
 
 script:
-  - ant -verbose test -lib ./lib/junit-4.12.jar ./lib/hamcrest-core-1.3.jar
+  - ant -verbose test -lib ./lib/junit-4.12.jar # ./lib/hamcrest-core-1.3.jar
 
 branches:
   only:
