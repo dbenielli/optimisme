@@ -22,8 +22,9 @@ public class PSFPreparatorTest {
 	
 	@Before
 	public void setUpBefore() throws Exception {
-	
-		final String path =   System.getProperty("user.dir")+ "/data/";
+	    final String path = PSFPreparatorTest .class.getProtectionDomain().getCodeSource().getLocation().getPath() +"data/";
+		
+	//	final String path =   System.getProperty("user.dir")+ "/data/";
 		final String imageNamePsf = "psf_synth.tiff";
 		final String imageNamePsfCal = "psf_synth_subsampled.tiff";
 		Opener op = new Opener();
