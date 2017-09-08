@@ -12,9 +12,17 @@
     <pathelement location="${main.build.dir}"/>
  </path>
 
-  <path id="classpath.test">
+  <!--path id="classpath.test">
    <pathelement location="lib/junit-4.12.jar"/>
    <pathelement location="lib/hamcrest-core-1.3.jar"/>
+   <pathelement location="${test.build.dir}"/>
+   <pathelement location="${basedir}" /> 
+   <path refid="classpath.base" />
+  </path-->
+
+  <path id="classpath.test">
+   <fileset dir="lib" includes="*.jar"/>
+   <pathelement location="${test.build.dir}"/>
    <pathelement location="${basedir}" /> 
    <path refid="classpath.base" />
   </path>
@@ -34,16 +42,15 @@
   <target name="test" depends="test-compile">
 <echo message="JUnit ClassPath is: classpath.test"/>
     <junit printsummary="yes" haltonfailure="yes" fork="true" dir="${test.build.dir}">
-        <classpath>          
-          <pathelement location="${test.build.dir}"/>
-           <pathelement path="${classpath.test}"/>
+       <classpath refid="classpath.test" />
+ <!--classpath>                 
           <path refid="classpath.test"/>
-        </classpath>
+        </classpath-->
  <formatter type="brief" usefile="false" />
-        <batchtest>
+        <!--batchtest>
             <fileset dir="${test.build.dir}" includes="*Tests.class" />
-        </batchtest>
-
+        </batchtest-->
+ <test name="optimisme.test.AllTests" />
     </junit>
   </target>
 </project>
