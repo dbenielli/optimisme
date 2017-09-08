@@ -39,8 +39,9 @@ public class MMTest {
 	public void setUpBefore() throws Exception {
 		// final String path = "/home/dominique/projets/imageJ_optimiste/images/";
 	//	final String imageNamePsf = "calculatedPSF_lsm.tif";
-		
-		final String path =   System.getProperty("user.dir")+ "/data/";
+	    final String path = MMTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() +"/data/";
+		System.out.println(path);
+	    //final String path =   System.getProperty("user.dir")+ "/data/";
 		final String imageNamePsf = "psf_synth.tiff";
 		final String imageNamePsfSubSample = "psf_synth_subsampled.tiff";
 		
