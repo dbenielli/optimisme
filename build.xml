@@ -4,6 +4,7 @@
   <property name="test.build.dir" value="./optimisme/test"/>
   <property name="test.src.dir" value="./optimisme/test"/>
   <property name="junit.output.dir" value="junit"/>
+
   <path id="classpath.base" >
     <fileset dir="." includes="jtransforms-2.4.jar"/>
     <fileset dir="." includes="org.jar"/>
@@ -35,6 +36,7 @@
     <junit printsummary="yes" haltonfailure="yes" fork="true" dir="${test.build.dir}">
         <classpath>          
           <pathelement location="${test.build.dir}"/>
+           <pathelement path="${classpath.test}"/>
           <path refid="classpath.test"/>
         </classpath>
  <formatter type="brief" usefile="false" />
