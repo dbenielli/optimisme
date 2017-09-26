@@ -179,10 +179,13 @@ The plugin then proceeds with the actual restoration algorithm (see~\cite{chouze
 The OPTIMISME plugin outputs at least one image
 \begin{itemize}
 
-\item At the end of the computations an image is opened: it is the deconvolved image, the user can save it using the \emph{File>Save as}  menu.
+\item At the end of the computations an image is opened: it is the deconvolved image, the user can save it using the   menu.
 \item When the input images (image and PSF) do not have the same resolution, the algorithm first re-samples the PSF; then, at the end of this first stage, the program displays the re-sampled PSF with the same resolution as the input image. The user can save it for further runs of the program and use it for all the images having the same resolution  using the \emph{File>Save as} menu.
 \end{itemize}
+\subsubsection{others Output}
+At the end of the calculation a text OPTIMISME software open a text window that summarizes the different parameter used for the previons calculation, this file can be save as txt file with th menu \emph{File>Save as}
 
+\includegraphics[scale=0.3]{images/txtWindow.png}
 \section{Package OPTIMISME}
 
 \subsection{The java class}
