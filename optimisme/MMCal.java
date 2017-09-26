@@ -16,7 +16,7 @@ import org.apache.commons.math3.analysis.interpolation.TricubicInterpolatingFunc
  * @author       Dominique Benielli
  * @author       Caroline Chaux-Moulin
  * @author       Sandrine Anthoine
- * @version 1.2
+ * @version 1.3
  */
 public  class MMCal{ 
 

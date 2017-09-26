@@ -13,7 +13,7 @@ import optimisme.MMCal.Squeeze;
  * @author       Dominique Benielli
  * @author       Caraline Chaux-Moulin
  * @author       Sandrine Anthoine
- * @version 1.2 
+ * @version 1.3
  */
 
 public class PSFPreparator 

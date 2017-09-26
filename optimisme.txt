@@ -1,8 +1,11 @@
 import optimisme.MM;
 import optimisme.MM.MMParameter;
+
+
 import ij.*;
 import ij.gui.*;
 import ij.plugin.*;
+import ij.text.*;
 
 /**
  * Title:        OPTIMIST --- A 3D  implementation for ImageJ
@@ -20,19 +23,34 @@ import ij.plugin.*;
  * @author       Dominique Benielli
  * @author       Caroline Chaux-Moulin
  * @author       Sandrine Anthoine
- * @version 1.2
+ * @version 1.3
  * 
  */
 public class optimisme_ implements PlugIn
 {
 	private static final String plugInTitle = "OPTIMISME --- A java Optimisme implementation";
 	private static final String outputFrameTitlePrefix = "Optimisme Reconstruction--- ";
-	private static final String version = "1.2";
+	private static final String version = "1.3";
+	private static String image_string1 = "Image to process:";
+	private static String image_string2 = "PSF to process:";
+	private static String channel_string1 = "Channel number:";
+	private static String number_string1 = "Number of iterations:";
+	private static String number_string2 = "XY regularization:";	
+	private static String number_string3 = "XY smoothing:";	
+	private static String number_string4 = "Z regularization:";
+	private static String number_string5 = "Penalization phixy ([1,7]):";
+	private static String number_string6 = "Penalization phiz ([1,5]):";
+	private static String number_string7 = "Z smoothing:";
+	private static String number_string8 = "Penalization eta:";
 	/* (non-Javadoc)
 	 * @see ij.plugin.PlugIn#run(java.lang.String)
 	 */
 	public void run( String arg )
-	{   String info ="";
+	{   
+	String info ="";
+
+	
+
 	int NbIt = 1000;
 	double regul = 1e-1;
 	int T = 1;
@@ -117,19 +135,19 @@ public class optimisme_ implements PlugIn
 
 
 	GenericDialog gd = new GenericDialog( plugInTitle, IJ.getInstance() );
-	gd.addChoice( "Image to process:", titles1,  titles1[ 0 ] );
-	gd.addChoice("Channel number",strTabChan , 
+	gd.addChoice( image_string1, titles1,  titles1[ 0 ] );
+	gd.addChoice(channel_string1, strTabChan , 
 			(numberChannelChoice > numberChannelMax) ? String.valueOf(numberChannelMax) : String.valueOf(numberChannelChoice));
 
-	gd.addChoice( "PSF to process:", titles2, titles2[ 0 ] );
-	gd.addNumericField("Number of iterations", NbIt, 0);
-	gd.addNumericField("XY regularization", regul, 4);
-	gd.addNumericField("XY smoothing", T, 0);
-	gd.addNumericField("Z regularization", regulZ, 6);
-	gd.addNumericField("Penalization phixy ([1,7])", phixy, 0);
-	gd.addNumericField("Penalization phiz ([1,5])", phiz, 0);
-	gd.addNumericField("Z smoothing", TZ, 4);
-	gd.addNumericField("Penalization eta", eta, 0);
+	gd.addChoice( image_string2, titles2, titles2[ 0 ] );
+	gd.addNumericField(number_string1, NbIt, 0);
+	gd.addNumericField(number_string2, regul, 4);
+	gd.addNumericField(number_string3, T, 0);
+	gd.addNumericField(number_string4, regulZ, 6);
+	gd.addNumericField(number_string5, phixy, 0);
+	gd.addNumericField(number_string6, phiz, 0);
+	gd.addNumericField(number_string7, TZ, 4);
+	gd.addNumericField(number_string8, eta, 0);
 	gd.showDialog();
 	NbIt = (int)gd.getNextNumber();
 	regul = (double)gd.getNextNumber();
@@ -184,12 +202,7 @@ public class optimisme_ implements PlugIn
 	{
 		double[] resPSF = new double[3];
 		double[] resIM = new double[3];
-		resPSF[0] = psf.getCalibration().pixelWidth;
-		resPSF[1] = psf.getCalibration().pixelHeight;
-		resPSF[2] = psf.getCalibration().pixelDepth;
-		resIM[0] = imp.getCalibration().pixelWidth;
-		resIM[1] = imp.getCalibration().pixelHeight;
-		resIM[2] = imp.getCalibration().pixelDepth;
+
 		double mul  = 1.0;
 		if(imp.getCalibration().getUnits().equalsIgnoreCase(psf.getCalibration().getUnits()) ){
 			mul = 1.0;  		
@@ -199,6 +212,12 @@ public class optimisme_ implements PlugIn
 			//IJ.error( "Image and PSF are not calibrated in same units." );
 			return;
 		}
+		resPSF[0] = psf.getCalibration().pixelWidth;
+		resPSF[1] = psf.getCalibration().pixelHeight;
+		resPSF[2] = psf.getCalibration().pixelDepth;
+		resIM[0] = imp.getCalibration().pixelWidth;
+		resIM[1] = imp.getCalibration().pixelHeight;
+		resIM[2] = imp.getCalibration().pixelDepth;
 
 		MM.MMParameter param = new MMParameter(NbIt, regul, T, regulZ, 
 				phixy , phiz, TZ, eta, resIM,resPSF,imp.getCalibration().getUnits());
@@ -221,9 +240,20 @@ public class optimisme_ implements PlugIn
 		// create plugIn frame that gives choices for various output
 		//   new OutputFrame( outputFrameTitlePrefix + "Real input: " + real.getTitle() + "; Imaginary input: " +
 		//                   ( ( imaginary != null ) ? imaginary.getTitle() : "<none>"), transformer );
+
+		writeInfoWindows(gd);
+                    
 	}
-	finally
+
+	catch (Exception e)
 	{
+		IJ.showMessage( "About optimisme...", "Image and/or PSF have some trouble");
+		//IJ.error( "Image and PSF are not calibrated in same units." );		
+
+	}
+	
+	finally
+	{	        
 		imp.unlock();
 		psf.unlock();
 	}
@@ -238,8 +268,50 @@ public class optimisme_ implements PlugIn
 						"\n" +
 				"" );
 	}
-
-
+	
+	
+	private static void writeInfoWindows(GenericDialog gd)
+	{
+	TextWindow tw = new TextWindow("Process_information_frame", "", 250, 320);
+	tw.append(plugInTitle.concat( "_Parameters informations ").concat(version));
+	tw.append("");
+	String st;
+	st = image_string1.concat(" ").concat(
+		gd.getChoices().get(0).toString().split(",")[5].replaceAll("current=","").replaceAll("]",""));
+	tw.append(st);
+	st = channel_string1.concat(" ").concat(
+		gd.getChoices().get(1).toString().split(",")[5].replaceAll("current=","").replaceAll("]",""));
+	tw.append(st);
+	st = image_string2.concat(" ").concat(
+	        gd.getChoices().get(2).toString().split(",")[5].replaceAll("current=","").replaceAll("]",""));
+	tw.append(st);
+	st = number_string1.concat(" ").concat(
+		gd.getNumericFields().get(0).toString().split(",")[5].replaceAll("text=",""));
+	tw.append(st);
+	st = number_string2.concat(" ").concat(
+		gd.getNumericFields().get(1).toString().split(",")[5].replaceAll("text=",""));
+	tw.append(st);
+	st = number_string3.concat(" ").concat(
+		gd.getNumericFields().get(2).toString().split(",")[5].replaceAll("text=",""));
+	tw.append(st);
+	st = number_string4.concat(" ").concat(
+		gd.getNumericFields().get(3).toString().split(",")[5].replaceAll("text=",""));
+	tw.append(st);
+	st = number_string5.concat(" ").concat(
+		gd.getNumericFields().get(4).toString().split(",")[5].replaceAll("text=",""));
+	tw.append(st);
+	st = number_string6.concat(" ").concat(
+		gd.getNumericFields().get(5).toString().split(",")[5].replaceAll("text=",""));
+	tw.append(st);
+	st = number_string7.concat(" ").concat(
+		gd.getNumericFields().get(6).toString().split(",")[5].replaceAll("text=",""));
+	tw.append(st);
+	st = number_string8.concat(" ").concat(
+		gd.getNumericFields().get(7).toString().split(",")[5].replaceAll("text=",""));
+	tw.append(st);
+	}
+	
+	
 	/**
 	 * @param image
 	 * @return boolean if imagePlus

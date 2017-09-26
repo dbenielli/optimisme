@@ -1,0 +1,13 @@
+OPTIMISME --- A java Optimisme implementation_Parameters informations 1.3
+
+Image to process: image_synth.tiff
+Channel number: 1
+PSF to process: psf_synth.tiff
+Number of iterations: 1000
+XY regularization: 0.1000
+XY smoothing: 1
+Z regularization: 0.010000
+Penalization phixy ([1,7]): 4
+Penalization phiz ([1,5]): 5
+Z smoothing: 0.0100
+Penalization eta: 1
